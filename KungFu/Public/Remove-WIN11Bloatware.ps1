@@ -23,9 +23,12 @@ function Remove-Win11Bloatware {
         if ($manufacturer -like "*HP*") {
             Write-Host "HP detected"
             $HPidentifier = "AD2F1837"
+            $WhitelistedApps = @(
+                "AD2F1837.HPSupportAssistant"
+            )
             $UninstallPrograms = (Get-ModuleConfig).CleanUp.Manufacturer.HP.Programs
-            $ProvisionedPackages = Get-AppxProvisionedPackage -Online | Where-Object { ($UninstallPackages -contains $_.DisplayName) -or ($_.DisplayName -match "^$HPidentifier") }
-            $InstalledPackages = Get-AppxPackage -AllUsers | Where-Object { ($UninstallPackages -contains $_.Name) -or ($_.Name -match "^$HPidentifier") }
+            $ProvisionedPackages = Get-AppxProvisionedPackage -Online | Where-Object { ($UninstallPackages -contains $_.DisplayName) -or ($_.DisplayName -match "^$HPidentifier") -and ($_.Name -NotMatch $WhitelistedApps)}
+            $InstalledPackages = Get-AppxPackage -AllUsers | Where-Object { ($UninstallPackages -contains $_.Name) -or ($_.Name -match "^$HPidentifier") -and ($_.Name -NotMatch $WhitelistedApps) }
         }
 
         if ($manufacturer -like "*Dell*") {
@@ -36,8 +39,8 @@ function Remove-Win11Bloatware {
                 "Dell, Inc. - Firmware*"
             )
             $UninstallPrograms = (Get-ModuleConfig).CleanUp.Manufacturer.Dell.Programs
-            $ProvisionedPackages = Get-AppxProvisionedPackage -Online | Where-Object {(($_.Name -in $UninstallPrograms) -or ($_.Name -like "*Dell*")) -and ($_.Name -NotMatch $WhitelistedApps)}
-            $InstalledPackages = Get-AppxPackage -AllUsers | Where-Object {(($_.Name -in $UninstallPrograms) -or ($_.Name -like "*Dell*")) -and ($_.Name -NotMatch $WhitelistedApps)}
+            $ProvisionedPackages = Get-AppxProvisionedPackage -Online | Where-Object { (($_.Name -in $UninstallPrograms) -or ($_.Name -like "*Dell*")) -and ($_.Name -NotMatch $WhitelistedApps) }
+            $InstalledPackages = Get-AppxPackage -AllUsers | Where-Object { (($_.Name -in $UninstallPrograms) -or ($_.Name -like "*Dell*")) -and ($_.Name -NotMatch $WhitelistedApps) }
 
         }
 
@@ -50,7 +53,7 @@ function Remove-Win11Bloatware {
             $InstalledPackages = Get-AppxPackage -AllUsers | Where-Object { ($UninstallPackages -contains $_.Name) -or ($_.Name -match "^$HPidentifier") }
         }
 
-        $InstalledPrograms = $AllInstalledApps | Where-Object { $UninstallPrograms -contains $_.Name -and ($_.Name -NotMatch $WhitelistedApps)}
+        $InstalledPrograms = $AllInstalledApps | Where-Object { $UninstallPrograms -contains $_.Name -and ($_.Name -NotMatch $WhitelistedApps) }
     }
     process {
         # Stop Process
@@ -117,7 +120,35 @@ function Remove-Win11Bloatware {
         }
     }
     end {
+        # Bing Downloaded Maps Manager
+        Get-Service "MapsBroker" | Stop-Service | Out-Null
+        Get-Service "MapsBroker" | Set-Service -StartupType Disabled | Out-Null
+        Write-Host "Bing Downloaded Maps Manager [DISABLED]" -ForegroundColor Green
+
+        # Parental Controls
+        Get-Service "WpcMonSvc" | Stop-Service | Out-Null
+        Get-Service "WpcMonSvc" | Set-Service -StartupType Disabled | Out-Null
+        Write-Host "Parental Controls [DISABLED]" -ForegroundColor Green
+
+        # Parental Controls
+        Get-Service "WpcMonSvc" | Stop-Service | Out-Null
+        Get-Service "WpcMonSvc" | Set-Service -StartupType Disabled | Out-Null
+        Write-Host "Parental Controls [DISABLED]" -ForegroundColor Green
+        # Windows Mobile Hotspot Service
+        Get-Service "icssvc" | Stop-Service | Out-Null
+        Get-Service "icssvc" | Set-Service -StartupType Disabled | Out-Null
+        Write-Host "Windows Mobile Hotspot Service [DISABLED]" -ForegroundColor Green
+        # Windows Media Player Network Share
+        Get-Service "WMPNetworkSvc" | Stop-Service | Out-Null
+        Get-Service "WMPNetworkSvc" | Set-Service -StartupType Disabled | Out-Null
+        Write-Host "Windows Media Player Network Share [DISABLED]" -ForegroundColor Green
+        # Windows Mixed Reality OpenXR Service
+        Get-Service "MixedRealityOpenXRSvc" | Stop-Service | Out-Null
+        Get-Service "MixedRealityOpenXRSvc" | Set-Service -StartupType Disabled | Out-Null
+        Write-Host "Windows Mixed Reality OpenXR Service [DISABLED]" -ForegroundColor Green
         Write-Host "Cleaning Done"
     }
+
+
 }
 
