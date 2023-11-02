@@ -1,6 +1,0 @@
-function Set-Network {
-    param (
-
-    )
-
-}
