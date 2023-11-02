@@ -120,6 +120,7 @@ function Remove-Win11Bloatware {
         }
     }
     end {
+        #TODO: Move to Conf File
         # Bing Downloaded Maps Manager
         Get-Service "MapsBroker" | Stop-Service | Out-Null
         Get-Service "MapsBroker" | Set-Service -StartupType Disabled | Out-Null
@@ -148,7 +149,5 @@ function Remove-Win11Bloatware {
         Write-Host "Windows Mixed Reality OpenXR Service [DISABLED]" -ForegroundColor Green
         Write-Host "Cleaning Done"
     }
-
-
 }
 
