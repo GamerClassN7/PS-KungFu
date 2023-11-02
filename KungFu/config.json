@@ -1,0 +1,130 @@
+{
+    "CleanUp": {
+        "OS": {
+            "Windows11": [
+                //MicrosoftWindows.Client.WebExperience,
+                //Microsoft.WindowsTerminal,
+                //Microsoft.WindowsStore,
+                //Microsoft.WindowsSoundRecorder,
+                //Microsoft.WindowsNotepad,
+                //Microsoft.WindowsMaps,
+                //Microsoft.WindowsFeedbackHub,
+                //Microsoft.WindowsCamera,
+                //Microsoft.WindowsCalculator,
+                //Microsoft.WindowsAlarms,
+                //Microsoft.Windows.Photos,
+                //Microsoft.WebpImageExtension,
+                //Microsoft.WebMediaExtensions,
+                //Microsoft.VP9VideoExtensions,
+                //Microsoft.VCLibs.140.00,
+                //Microsoft.UI.Xaml.2.4,
+                //Microsoft.Todos,
+                //Microsoft.StorePurchaseApp,
+                //Microsoft.SecHealthUI,
+                //Microsoft.ScreenSketch,
+                //Microsoft.PowerAutomateDesktop,
+                //Microsoft.People,
+                //Microsoft.Paint,
+                //Microsoft.MicrosoftStickyNotes,
+                //Microsoft.MicrosoftEdge.Stable,
+                //Microsoft.HEIFImageExtension,
+                //Microsoft.Getstarted,
+                //Microsoft.GetHelp,
+                //Microsoft.DesktopAppInstaller,
+                //Microsoft.549981C3F5F1"
+                //MicrosoftTeams
+                //Microsoft.ZuneVideo
+                //Microsoft.ZuneMusic
+                //Microsoft.YourPhone
+                //Microsoft.XboxSpeechToTextOverlay
+                //Microsoft.XboxIdentityProvider
+                //Microsoft.XboxGamingOverlay
+                //Microsoft.XboxGameOverlay
+                //Microsoft.Xbox.TCUI
+                //Microsoft.WindowsCommunicationsApps
+                //Microsoft.MicrosoftSolitaireCollection
+                //Microsoft.MicrosoftOfficeHub
+                //Microsoft.GamingApp
+                //Microsoft.BingWeather
+                //Microsoft.BingNews
+                "Microsoft.BingNews",
+                "Microsoft.GamingApp",
+                "Microsoft.MicrosoftSolitaireCollection",
+                "Microsoft.WindowsCommunicationsApps",
+                "Microsoft.WindowsFeedbackHub",
+                "Microsoft.XboxGameOverlay",
+                "Microsoft.XboxGamingOverlay",
+                "Microsoft.XboxIdentityProvider",
+                "Microsoft.XboxSpeechToTextOverlay",
+                "Microsoft.YourPhone",
+                "Microsoft.ZuneMusic",
+                "Microsoft.ZuneVideo",
+                "MicrosoftTeams"
+            ]
+        },
+        "Manufacturer": {
+            "HP": {
+                "Programs": [
+                    "HP Client Security Manager",
+                    "HP Notifications",
+                    "HP Security Update Service",
+                    "HP System Default Settings",
+                    "HP Wolf Security",
+                    "HP Wolf Security Application Support for Sure Sense",
+                    "HP Wolf Security Application Support for Windows",
+                    "AD2F1837.HPPCHardwareDiagnosticsWindows",
+                    "AD2F1837.HPPowerManager",
+                    "AD2F1837.HPPrivacySettings",
+                    "AD2F1837.HPQuickDrop",
+                    "AD2F1837.HPSupportAssistant",
+                    "AD2F1837.HPSystemInformation",
+                    "AD2F1837.myHP",
+                    "RealtekSemiconductorCorp.HPAudioControl",
+                    "HP Sure Recover",
+                    "HP Sure Run Module",
+                    "RealtekSemiconductorCorp.HPAudioControl_2.39.280.0_x64__dt26b99r8h8gj",
+                ] },
+            "Dell": {
+                "Programs": [
+                    "Dell Optimizer",
+                    "Dell Power Manager",
+                    "DellOptimizerUI",
+                    "Dell SupportAssist OS Recovery",
+                    "Dell SupportAssist",
+                    "Dell Optimizer Service",
+                    "DellInc.PartnerPromo",
+                    "DellInc.DellOptimizer",
+                    "DellInc.DellCommandUpdate",
+                    "Dell Command | Update for Windows",
+                    "Dell Digital Delivery",
+                    "Dell SupportAssist Remediation",
+                    "SupportAssist Recovery Assistant"
+                ]
+            },
+            "Lenovo": {
+                "Process": [
+                    "SmartAppearanceSVC.exe",
+                    "UDClientService.exe",
+                    "ModuleCoreService.exe",
+                    "ProtectedModuleHost.exe",
+                    "*lenovo*",
+                    "FaceBeautify.exe",
+                    "McCSPServiceHost.exe",
+                    "mcapexe.exe",
+                    "MfeAVSvc.exe",
+                    "mcshield.exe",
+                    "Ammbkproc.exe",
+                    "AIMeetingManager.exe",
+                    "DADUpdater.exe"
+                ],
+                "Programs": [
+                    "E046963F.AIMeetingManager",
+                    "E0469640.SmartAppearance",
+                    "MirametrixInc.GlancebyMirametrix",
+                    "E046963F.LenovoCompanion",
+                    "E0469640.LenovoUtility"
+                ]
+            }
+        }
+    }
+}
