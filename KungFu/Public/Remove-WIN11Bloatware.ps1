@@ -12,50 +12,45 @@ function Remove-Win11Bloatware {
 
         $details = Get-CimInstance -ClassName Win32_ComputerSystem
         $manufacturer = $details.Manufacturer
-        $AllInstalledApps = @("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "HKCU:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall") | ForEach-Object {
-            if (-not (Test-Path -Path $_)) {
-                return
-            }
-
-            return Get-ChildItem -Path $_ | Get-ItemProperty | Select-Object -Property DisplayName, UninstallString | ForEach-Object {
-                $string1 = $_.uninstallstring
-                #Check if it's an MSI install
-                if ($string1 -match "^msiexec*") {
-                    #MSI install, replace the I with an X and make it quiet
-                    $string2 = $string1 + " /quiet /norestart"
-                    $string2 = $string2 -replace "/I", "/X "
-                    #Uninstall with string2 params
-                    return New-Object -TypeName PSObject -Property @{
-                        Name   = $_.DisplayName
-                        String = $string2
-                    }
-                }
-                else {
-                    #Exe installer, run straight path
-                    $string2 = $string1
-                    return New-Object -TypeName PSObject -Property @{
-                        Name   = $_.DisplayName
-                        String = $string2
-                    }
-                }
-            }
-        }
+        $AllInstalledApps = Get-UninstallStrings
 
         $StopProcess = @()
         $InstalledPackages = @()
         $ProvisionedPackages = @()
         $InstalledPrograms = @()
+        $WhitelistedApps = @()
 
         if ($manufacturer -like "*HP*") {
             Write-Host "HP detected"
             $HPidentifier = "AD2F1837"
-            $WhitelistedApps = @()
             $UninstallPrograms = (Get-ModuleConfig).CleanUp.Manufacturer.HP.Programs
             $ProvisionedPackages = Get-AppxProvisionedPackage -Online | Where-Object { ($UninstallPackages -contains $_.DisplayName) -or ($_.DisplayName -match "^$HPidentifier") }
             $InstalledPackages = Get-AppxPackage -AllUsers | Where-Object { ($UninstallPackages -contains $_.Name) -or ($_.Name -match "^$HPidentifier") }
         }
 
-        $InstalledPrograms = $AllInstalledApps | Where-Object { $UninstallPrograms -contains $_.Name }
+        if ($manufacturer -like "*Dell*") {
+            Write-Host "Dell detected"
+            $WhitelistedApps = @(
+                "WavesAudio.MaxxAudioProforDell2019"
+                "Dell - Extension*"
+                "Dell, Inc. - Firmware*"
+            )
+            $UninstallPrograms = (Get-ModuleConfig).CleanUp.Manufacturer.Dell.Programs
+            $ProvisionedPackages = Get-AppxProvisionedPackage -Online | Where-Object {(($_.Name -in $UninstallPrograms) -or ($_.Name -like "*Dell*")) -and ($_.Name -NotMatch $WhitelistedApps)}
+            $InstalledPackages = Get-AppxPackage -AllUsers | Where-Object {(($_.Name -in $UninstallPrograms) -or ($_.Name -like "*Dell*")) -and ($_.Name -NotMatch $WhitelistedApps)}
+
+        }
+
+        if ($manufacturer -like "*Lenovo*") {
+            Write-Host "Lenovo detected"
+            $StopProcess = (Get-ModuleConfig).CleanUp.Manufacturer.Lenovo.Process
+
+            $UninstallPrograms = (Get-ModuleConfig).CleanUp.Manufacturer.HP.Programs
+            $ProvisionedPackages = Get-AppxProvisionedPackage -Online | Where-Object { ($UninstallPackages -contains $_.DisplayName) -or ($_.DisplayName -match "^$HPidentifier") }
+            $InstalledPackages = Get-AppxPackage -AllUsers | Where-Object { ($UninstallPackages -contains $_.Name) -or ($_.Name -match "^$HPidentifier") }
+        }
+
+        $InstalledPrograms = $AllInstalledApps | Where-Object { $UninstallPrograms -contains $_.Name -and ($_.Name -NotMatch $WhitelistedApps)}
     }
     process {
         # Stop Process
@@ -125,91 +120,4 @@ function Remove-Win11Bloatware {
         Write-Host "Cleaning Done"
     }
 }
-
-
-    # [CmdletBinding()]
-    # param ()
-    # begin {
-    #     $OS = (Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber
-    #     Switch -Wildcard ( $OS ) {
-    #         '21*' {
-    #             $OSVer = "Windows 10"
-    #             Write-Warning "This script is intended for use on Windows 11 devices. $($OSVer) was detected..."
-    #             Exit 1
-    #         }
-    #     }
-
-    #     $details = Get-CimInstance -ClassName Win32_ComputerSystem
-    #     $manufacturer = $details.Manufacturer
-
-    #     $AppPackageList = Get-AppxProvisionedPackage -Online
-    #     $AppPackageRemoveList = (Get-ModuleConfig).OS.Windows11
-
-    #     $StopProcess = @()
-    #     $UninstallPrograms = @()
-    #     $UninstallProgramsWhitelist = @()
-    #     $InstalledPackages = Get-AppxPackage -AllUsers | Where-Object {(($_.Name -in $UninstallPrograms))}
-    #     $ProvisionedPackages = Get-AppxProvisionedPackage -Online | Where-Object {(($_.Name -in $UninstallPrograms))}
-
-    #     v
-    #
-
-    #     $InstalledPrograms = $AllInstalledApps | Where-Object { $UninstallPrograms -contains $_.DisplayName }
-    # }
-
-    # process {
-    #     $StopProcess | ForEach-Object {
-    #         write-host "Stopping Process $_"
-    #         Get-Process -Name $_ | Stop-Process -Force
-    #         write-host "Process $_ Stopped"
-    #     }
-
-    #     $AppPackageRemoveList | ForEach-Object {
-    #         $PackageName = $AppPackageList | Where-Object -Property "DisplayName" -Value $_ -EQ | Select-Object -First 1
-    #         if ([string]::IsNullOrEmpty($PackageName)) {
-    #             continue
-    #         }
-
-    #         Write-Host $PackageName
-    #         $RemoveAppx = Remove-AppxProvisionedPackage -PackageName $PackageName -Online -AllUsers
-
-    #         $AppProvisioningPackageNameReCheck = Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -like $_ } | Select-Object -ExpandProperty PackageName -First 1
-    #         If ([string]::IsNullOrEmpty($AppProvisioningPackageNameReCheck) -and ($RemoveAppx.Online -eq $true)) {
-    #             Write-Host @CheckIcon
-    #             Write-Host " (Removed)"
-    #             Write-LogEntry -Value "$($BlackListedApp) removed"
-    #         }
-    #     }
-
-    #     $InstalledPrograms | ForEach-Object {
-    #         Write-Host -Object "Attempting to uninstall: [$($_.Name)]..."
-    #         $uninstallcommand = $_.String
-    #         Try {
-    #             if ($uninstallcommand -match "^msiexec*") {
-    #                 #Remove msiexec as we need to split for the uninstall
-    #                 $uninstallcommand = $uninstallcommand -replace "msiexec.exe", ""
-    #                 #Uninstall with string2 params
-    #                 Start-Process 'msiexec.exe' -ArgumentList $uninstallcommand -NoNewWindow -Wait
-    #             }
-    #             else {
-    #                 #Exe installer, run straight path
-    #                 $string2 = $uninstallcommand
-    #                 start-process $string2
-    #             }
-    #             #$A = Start-Process -FilePath $uninstallcommand -Wait -passthru -NoNewWindow;$a.ExitCode
-    #             #$Null = $_ | Uninstall-Package -AllVersions -Force -ErrorAction Stop
-    #             Write-Host -Object "Successfully uninstalled: [$($_.Name)]"
-    #         }
-    #         Catch {
-    #             Write-Warning -Message "Failed to uninstall: [$($_.Name)]"
-    #         }
-
-
-    #     }
-    # }
-    # end {
-
-    # }
-
-
 
